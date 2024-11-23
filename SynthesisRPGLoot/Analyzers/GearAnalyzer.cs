@@ -191,8 +191,6 @@ namespace SynthesisRPGLoot.Analyzers
                 return objectEffectGetter.FormKey;
             }
 
-            Console.WriteLine("Generating " + RarityClasses[rarity].Label + ItemTypeDescriptor + " enchantment of " +
-                              GetEnchantmentsStringForName(effects));
             var newObjectEffectGetter = State.PatchMod.ObjectEffects.AddNewLocking(State.PatchMod.GetNextFormKey());
             newObjectEffectGetter.DeepCopyIn(effects.First().Enchantment);
             newObjectEffectGetter.EditorID = objectEffectEditorId;
@@ -205,7 +203,6 @@ namespace SynthesisRPGLoot.Analyzers
             ChosenRpgEnchants[rarity].Add(RarityClasses[rarity].Label + " " + GetEnchantmentsStringForName(effects),
                 newObjectEffectGetter.FormKey);
             ChosenRpgEnchantEffects[rarity].Add(newObjectEffectGetter.FormKey, effects);
-            Console.WriteLine("Enchantment Generated");
             return newObjectEffectGetter.FormKey;
         }
 

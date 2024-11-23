@@ -155,8 +155,7 @@ namespace SynthesisRPGLoot.Analyzers
 
                     var newEnchantmentsForName = GetEnchantmentsStringForName(resolvedEnchantments);
                     var enchants = AllRpgEnchants[i];
-                    Console.WriteLine("Generated raw " + RarityClasses[i].Label + ItemTypeDescriptor +
-                                      " enchantment of " + newEnchantmentsForName);
+
                     if (!enchants.ContainsKey(RarityClasses[i].Label + " " + newEnchantmentsForName))
                     {
                         enchants.Add(RarityClasses[i].Label + " " + newEnchantmentsForName, resolvedEnchantments);
@@ -184,7 +183,6 @@ namespace SynthesisRPGLoot.Analyzers
                     return armorGetter.FormKey;
                 }
 
-                Console.WriteLine("Generating Enchanted version of " + itemName);
                 var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newArmor.DeepCopyIn(item.Resolved);
                 newArmor.EditorID = newArmorEditorId;
@@ -199,13 +197,14 @@ namespace SynthesisRPGLoot.Analyzers
                 {
                     newArmor.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
                 }
-
-                Console.WriteLine("Generated " + newArmor.Name);
+                
+                if (Program.Settings.GeneralSettings.LogGeneratedItems)
+                    Console.WriteLine($"Generated {newArmor.Name}");
+                
                 return newArmor.FormKey;
             }
             else
             {
-                Console.WriteLine("Generating unenchanted version of " + itemName);
                 var newArmorEditorId = EditorIdPrefix + item.Resolved.EditorID;
                 if (State.LinkCache.TryResolve<IArmorGetter>(newArmorEditorId, out var armorGetter))
                 {
@@ -219,9 +218,9 @@ namespace SynthesisRPGLoot.Analyzers
                 newArmor.Name = RarityClasses[rarity].Label.Equals("")
                     ? itemName
                     : RarityClasses[rarity].Label + " " + itemName;
-
-                Console.WriteLine("Generated " + newArmor.Name);
-
+                
+                if (Program.Settings.GeneralSettings.LogGeneratedItems)
+                    Console.WriteLine($"Generated {newArmor.Name}");
 
                 return newArmor.FormKey;
             }

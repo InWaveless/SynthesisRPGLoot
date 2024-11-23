@@ -3,8 +3,11 @@
 ## Version 4.0.0 - 23.11.2024
 * Added [Syllabore](https://github.com/kesac/Syllabore) support for Name Generation
 * Made the Names more variable and not fully stuck to what their EditorID would be.
-* With the default settings and all the Anniversary Edition DLC Content Installed the patcher finished in ~2 minutes.
 * Renamed more parts of the Patcher to Synthesis RPG Loot from Halgaris RPG Loot.
+* Reduced the amount of logging and added a toggle to disable logging for individual items for better performance.
+  * Using the default settings and all the Anniversary Edition DLC Content Installed (On an AMD Ryzen 5 7600X CPU)
+    * Runtime with logging for individual items disabled 1.8 min.
+    * Runtime with logging for individual items enabled 2 min.
 
 ## Version 3.2.0 - 06.04.2024
 * Fixed unplayable armor and weapon records being used in the patcher

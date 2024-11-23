@@ -14,6 +14,10 @@ namespace SynthesisRPGLoot.Settings;
 public class GeneralSettings
 {
     [MaintainOrder] public int RandomGenerationSeed = 42;
+    
+    [MaintainOrder]
+    [SynthesisTooltip("Disabling this can speed up the generation process.")]
+    public bool LogGeneratedItems = true;
         
     [MaintainOrder]
     [SynthesisSettingName("LeveledList Flags")]

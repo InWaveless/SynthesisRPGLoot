@@ -155,8 +155,7 @@ namespace SynthesisRPGLoot.Analyzers
 
                     var newEnchantmentsForName = GetEnchantmentsStringForName(resolvedEnchantments);
                     var enchants = AllRpgEnchants[i];
-                    Console.WriteLine("Generated raw " + RarityClasses[i].Label + ItemTypeDescriptor +
-                                      " enchantment of " + newEnchantmentsForName);
+                    
                     if (!enchants.ContainsKey(RarityClasses[i].Label + " " + newEnchantmentsForName))
                     {
                         enchants.Add(RarityClasses[i].Label + " " + newEnchantmentsForName, resolvedEnchantments);
@@ -184,7 +183,6 @@ namespace SynthesisRPGLoot.Analyzers
                     return weaponGetter.FormKey;
                 }
 
-                Console.WriteLine("Generating Enchanted version of " + itemName);
                 var newWeapon = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newWeapon.DeepCopyIn(item.Resolved);
                 newWeapon.EditorID = newWeaponEditorId;
@@ -200,12 +198,13 @@ namespace SynthesisRPGLoot.Analyzers
                     newWeapon.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
                 }
                 
-                Console.WriteLine("Generated " + newWeapon.Name);
+                if (Program.Settings.GeneralSettings.LogGeneratedItems)
+                    Console.WriteLine($"Generated {newWeapon.Name}");
+
                 return newWeapon.FormKey;
             }
             else
             {
-                Console.WriteLine("Generating unenchanted version of " + itemName);
                 var newWeaponEditorId = EditorIdPrefix + item.Resolved.EditorID;
                 if (State.LinkCache.TryResolve<IWeaponGetter>(newWeaponEditorId, out var weaponGetter))
                 {
@@ -218,9 +217,9 @@ namespace SynthesisRPGLoot.Analyzers
                 newWeapon.Name = RarityClasses[rarity].Label.Equals("")
                     ? itemName
                     : RarityClasses[rarity].Label + " " + itemName;
-
-                Console.WriteLine("Generated " + newWeapon.Name);
-
+                
+                if (Program.Settings.GeneralSettings.LogGeneratedItems)
+                    Console.WriteLine($"Generated {newWeapon.Name}");
 
                 return newWeapon.FormKey;
             }
