@@ -1,5 +1,7 @@
 # Synthesis RPG Loot (Enchantment Distributor)
 
+*prev. known as Halgari's RPG Loot*
+
 ## What does this Patcher do ?
 
 This patcher allows you to generate more enchantment variations defined as rarities,
@@ -30,9 +32,6 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
     - **Default:** `42`
     - Basically a Key to make the randomness repeatable, as long as your leveled lists,
       enchantments and weapons in the list don't change.
-  - **Only process constructible equipment:**
-    - **Default:** `On`
-    - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
   - **Enchantment Separator:**
     - **Default:** `, `
     - Separator used for listing all enchantments on labels
