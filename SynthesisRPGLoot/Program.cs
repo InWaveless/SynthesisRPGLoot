@@ -22,7 +22,7 @@ namespace SynthesisRPGLoot
                     nickname: "Settings",
                     path: "Settings.json",
                     out _lazySettings)
-                .SetTypicalOpen(GameRelease.SkyrimSE, "HalgariRpgLoot.esp")
+                .SetTypicalOpen(GameRelease.SkyrimSE, "SynthesisRpgLoot.esp")
                 .Run(args);
         }
 
