@@ -2,7 +2,7 @@
 
 ## Version 4.0.0 - 23.11.2024
 * Added [Syllabore](https://github.com/kesac/Syllabore) support for Name Generation
-* Made the Names more variable and not fully stuck to what their EditorID would be.
+* Made the Names more variable and not fully stuck with what their EditorID would be.
 * Renamed more parts of the Patcher to Synthesis RPG Loot from Halgaris RPG Loot.
 * Reduced the amount of logging and added a toggle to disable logging for individual items for better performance:
   * Runtime with logging for individual items disabled 1.8 min.
