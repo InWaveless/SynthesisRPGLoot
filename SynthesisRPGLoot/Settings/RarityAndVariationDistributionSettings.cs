@@ -26,7 +26,7 @@ public class RarityAndVariationDistributionSettings
 
         [MaintainOrder] public GearSettings ArmorSettings = new(16,20, new()
         {
-            new() {Label = "Base", HideRarityLabelInName = true, 
+            new() {Label = "Basic", HideRarityLabelInName = true, 
                 NumEnchantments = 1, RarityWeight = 17, AllowDisenchanting = true},
             new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 8,AllowDisenchanting = false },
             new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 3, AllowDisenchanting = false },
@@ -37,7 +37,7 @@ public class RarityAndVariationDistributionSettings
 
         [MaintainOrder] public GearSettings WeaponSettings = new(16,20, new()
         {
-            new() {Label = "Base", HideRarityLabelInName = true,
+            new() {Label = "Basic", HideRarityLabelInName = true,
                 NumEnchantments = 1, RarityWeight = 17, AllowDisenchanting = true },
             new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 8,AllowDisenchanting = false },
             new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 3, AllowDisenchanting = false },

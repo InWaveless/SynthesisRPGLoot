@@ -32,12 +32,6 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
     - **Default:** `42`
     - Basically a Key to make the randomness repeatable, as long as your leveled lists,
       enchantments and weapons in the list don't change.
-  - **Enchantment Separator:**
-    - **Default:** `, `
-    - Separator used for listing all enchantments on labels
-  - **Last Enchantment Separator:**
-    - **Default:** ` and `
-    - Separator used for the last two enchantments listed on labels
   - **LeveledList Flags List:**
     - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists)
       (they are named slightly different) and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)
@@ -46,7 +40,7 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
       - Default because it is present in Vanilla enchanted Leveled Lists
     - `SpecialLoot`
       - **Default:** `Off`
-      - Effects are unknown but I wanted to give people the option to try it.
+      - Effects are unknown, but I wanted to give people the option to try it.
   - **Untouchable Equipment Keywords:**
     - Keywords that are on unique and/or incompatible items
     - Defaults:
@@ -70,6 +64,7 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
       - `Skyrim.ObjectEffect.BoundBattleaxeEnchantment`
       - `Skyrim.ObjectEffect.BoundBowEnchantment`
       - `Skyrim.ObjectEffect.BoundSwordEnchantment`
+      - `Dragonborn.ObjectEffect.BoundDaggerEnchantment`
     - The defaults here filter the visual effect enchantments as they have no gameplay impact.
   - **Plugin List Mode:**
     - Decides if the following list gets used as a blacklist or whitelist
@@ -79,6 +74,7 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
   - **Plugin List:**
     - **Default:** `Empty` Because you Ideally manage to get universal filters done in the Keyword
       and Enchantment List Settings.
+    - This list only impacts enchantments and not weapons or armor. 
 - **Rarity And Variation Distribution Settings:**
   - **Leveled List Base**
     - Changes where the RPGLoot leveled lists are inserted.
@@ -112,23 +108,64 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
         - When using `AllValidUnenchantedItems` it will be the unenchanted base item.
     - **Rarities:**
       - Label: Added prefix to each generated item's name.
+      - Generate Name Scheme:
+        - The way generated names are used for the item.
+        - Options:
+          - `DontUse`
+          - `AsPrefixedPreviousOwnerName`
+          - `AsPrefixedPreviousOwnerNameReplacingEnchantments`
+          - `AsAppendedPreviousOwnerName`
+          - `AsAppendedPreviousOwnerNameReplacingEnchantments`
+          - `AsItemName`
+          - `AsItemNameReplacingEnchantments`
+      - Hide Rarity Label in Name: Hide the label in-game.
       - Num Enchantments: The number of enchantments used to define the rarity.
       - RarityWeight: Amount of times the rarity is put into leveled lists.
       - AllowDisenchanting: If not enabled new Items get the Keyword: `Skyrim.Keyword.MagicDisallowEnchanting`
       - **Default Rarities:**  
         *The Base Item Rarity is included for visualizing the percentages.* 
 
-        | Rarity Label | Number of Enchantments            | Rarity Weight | Allow Disenchanting | *Percentage* |
-        |--------------|-----------------------------------|---------------|---------------------|--------------|
-        | *Base*       | *`AllValidUnenchantedItems` => 0* | 20            | *Item Default*      | ~40,8%       |
-        | -            | 1                                 | 17            | true                | ~34,7%       |
-        | Rare         | 2                                 | 8             | false               | ~16,3%       |
-        | Epic         | 3                                 | 3             | false               | ~6,1%        |
-        | Legendary    | 4                                 | 1             | false               | ~2,1%        |
+        | Rarity Label | Generated Name Scheme                              | Hide Rarity Label in Name | Number of Enchantments            | Rarity Weight | Allow Disenchanting | *Percentage* |
+        |--------------|----------------------------------------------------|---------------------------|-----------------------------------|---------------|---------------------|--------------|
+        | *Base*       | ---                                                | ---                       | *`AllValidUnenchantedItems` => 0* | 20            | *Item Default*      | ~40,8%       |
+        | Basic        | `DontUse`                                          | `ON`                      | 1                                 | 17            | true                | ~34,7%       |
+        | Rare         | `DontUse`                                          | `OFF`                     | 2                                 | 8             | false               | ~16,3%       |
+        | Epic         | `DontUse`                                          | `OFF`                     | 3                                 | 3             | false               | ~6,1%        |
+        | Legendary    | `AsPrefixedPreviousOwnerNameReplacingEnchantments` | `OFF`                     | 4                                 | 1             | false               | ~2,1%        |
           
       - The formula for translating this into percentages is:
         `Weight_of_Rarity/Sum_of_Base_And_Rarity_Weights` (The base item weight is considered a rarity in this context)
         - *Disclaimer: The percentages won't be 100% reflected like this in gameplay since they only account for the
           chances introduced by this patcher and need to be considered on top of the vanilla/base chances of your setup
           to get either normal or enchanted gear depending on the `Leveled List Base` that was chosen in the previous
-          settings. Additionally the various filters for what are valid items will effect those percentages as well.* 
+          settings. However, the various filters for what are valid items will affect those percentages as well.* 
+- **Name Generator Settings**
+  - **Enchantment Separator:**
+    - **Default:** `, `
+    - Separator used for listing all enchantments on labels
+  - **Last Enchantment Separator:**
+    - **Default:** ` and `
+    - Separator used for the last two enchantments listed on labels
+  - **Random Name Generator (powered by [Syllabore](https://github.com/kesac/Syllabore)) Settings:**
+    - Syllable Character Settings:
+      - Configurations for the types of characters that should be used for generating the syllables that will be used to form names.
+    - Probabilities:
+      - Percentage chances for how the characters get used with `1` being 100% and `0` being 0%. (so `0.95` = 95%)
+  - Filters:
+    - Rules used to filter unwanted character combinations.  
+      - **If a filter is created that filters too broadly or maybe every possible name the generator can make with the previous settings then you can end up in an endless loop of the patcher being stuck trying to generate a new name that passes the filters!**
+    - **Do Not Allow:**
+      - List of rules that aren't allowed to be part of an outputted name.
+        - Can be normal text but is best used for RegEx rules of patterns that are unwanted in your names.
+    - **Do Not Allow Start:**
+      - List of character combinations that aren't allowed to be at the start of an outputted name.
+        - Can only be text.
+    - **Do Not Allow Substring:**
+      - List of character combinations that aren't allowed to be in an outputted name.
+        - Can only be text.
+    - **Do Not Allow End:**
+      - List of character combinations that aren't allowed to at the end of an outputted name.
+        - Can only be text.
+
+If you want to get a more technical understanding of how those settings work please use the documentation for [Syllabore](https://github.com/kesac/Syllabore).
+I tried my best to keep the setting names as close as possible to what Syllabore uses internally so they should still make sense even if you don't understand the code examples fully.

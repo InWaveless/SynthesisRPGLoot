@@ -8,7 +8,7 @@ using Mutagen.Bethesda.WPF.Reflection.Attributes;
 
 namespace SynthesisRPGLoot.Settings;
 
-public class NamingGeneratorSettings
+public class NameGeneratorSettings
 {
     [MaintainOrder]
     [SynthesisSettingName("Enchantment Separator")]

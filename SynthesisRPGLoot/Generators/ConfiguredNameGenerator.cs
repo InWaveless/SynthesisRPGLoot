@@ -11,7 +11,7 @@ public class ConfiguredNameGenerator : NameGenerator
     public ConfiguredNameGenerator(int seedSalt)
     {
         Random random = new(Program.Settings.GeneralSettings.RandomGenerationSeed+seedSalt);
-        var syllaboreSettings = Program.Settings.NamingGeneratorSettings.SyllaboreSettings;
+        var syllaboreSettings = Program.Settings.NameGeneratorSettings.SyllaboreSettings;
         
         //Add Syllable Settings
         var syllableGenerator = new DefaultSyllableGenerator();

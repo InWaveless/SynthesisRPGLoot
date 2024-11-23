@@ -32,10 +32,10 @@ public class SyllableSettings
         "Modifies if just one consonants list gets used or if you define the onsets and codas in AdvancedMode.")]
     [SynthesisTooltip(
         "Modifies if just one consonants list gets used or if you define the onsets and codas in AdvancedMode.")]
-    public ConsonantRulesMode ConsonantRulesMode = ConsonantRulesMode.AdvancedMode;
+    public ConsonantRulesMode ConsonantRulesMode = ConsonantRulesMode.BasicMode;
     
     [MaintainOrder]
-    [SynthesisSettingName("Usable Consonants (Basic)")]
+    [SynthesisSettingName("Usable Consonants [Basic]")]
     [SynthesisDescription("Consonants used for the Syllable generation. Ignored in advanced mode.")]
     [SynthesisTooltip(" Consonants used for the Syllable generation. Ignored in advanced mode.")]
     public List<WeightedElements<string>> WithConsonants = new ()
@@ -49,7 +49,7 @@ public class SyllableSettings
     };
     
     [MaintainOrder]
-    [SynthesisSettingName("Onsets (Advanced)")]
+    [SynthesisSettingName("Onsets (Leading Consonants) [Advanced]")]
     [SynthesisDescription("Onsets (leading consonants) used for the Syllable generation.")]
     [SynthesisTooltip("Onsets (leading consonants) used for the Syllable generation.)")]
     public List<WeightedElements<string>> WithLeadingConsonants = new ()
@@ -63,7 +63,7 @@ public class SyllableSettings
     };// Onsets (Grammatically Speaking)
     
     [MaintainOrder]
-    [SynthesisSettingName("Codas (Advanced)")]
+    [SynthesisSettingName("Codas (Trailing Consonants) [Advanced]")]
     [SynthesisDescription("Codas (trailing consonants) used for the Syllable generation.")]
     [SynthesisTooltip("Codas (trailing consonants) used for the Syllable generation.)")]
     public List<WeightedElements<string>> WithTrailingConsonants = new()

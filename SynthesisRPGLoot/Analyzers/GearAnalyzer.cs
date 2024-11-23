@@ -59,10 +59,10 @@ namespace SynthesisRPGLoot.Analyzers
             Program.Settings.GeneralSettings.LeveledListFlagSettings;
 
         private readonly string _enchantmentSeparatorString = 
-            Program.Settings.NamingGeneratorSettings.EnchantmentSeparator;
+            Program.Settings.NameGeneratorSettings.EnchantmentSeparator;
 
         private readonly string _lastEnchantmentSeparatorString =
-            Program.Settings.NamingGeneratorSettings.LastEnchantmentSeparator;
+            Program.Settings.NameGeneratorSettings.LastEnchantmentSeparator;
 
         protected string EditorIdPrefix;
 

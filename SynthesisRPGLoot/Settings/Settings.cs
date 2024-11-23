@@ -12,9 +12,10 @@ namespace SynthesisRPGLoot.Settings
 
         [MaintainOrder] public EnchantmentSettings EnchantmentSettings = new();
         
-        [MaintainOrder] public NamingGeneratorSettings NamingGeneratorSettings = new();
-
         [MaintainOrder] public RarityAndVariationDistributionSettings RarityAndVariationDistributionSettings = new();
+        
+        [MaintainOrder] public NameGeneratorSettings NameGeneratorSettings = new();
+
     }
     
 }
