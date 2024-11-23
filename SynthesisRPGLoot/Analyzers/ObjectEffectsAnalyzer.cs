@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using HalgarisRPGLoot.DataModels;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
 using Noggog;
+using SynthesisRPGLoot.Settings;
+using SynthesisRPGLoot.Settings.Enums;
 
-namespace HalgarisRPGLoot.Analyzers
+namespace SynthesisRPGLoot.Analyzers
 {
     public class ObjectEffectsAnalyzer
     {

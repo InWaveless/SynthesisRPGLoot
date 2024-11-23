@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HalgarisRPGLoot.DataModels;
+using SynthesisRPGLoot.DataModels;
+using SynthesisRPGLoot.Settings.Enums;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
-using Noggog;
+using SynthesisRPGLoot.Generators;
+using SynthesisRPGLoot.Settings;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
-namespace HalgarisRPGLoot.Analyzers
+namespace SynthesisRPGLoot.Analyzers
 {
     public abstract class GearAnalyzer<TType>
         where TType : class, IMajorRecordGetter
 
     {
         protected GearSettings GearSettings;
+        protected ConfiguredNameGenerator ConfiguredNameGenerator;
 
         protected RarityAndVariationDistributionSettings RarityAndVariationDistributionSettings;
 
@@ -50,15 +53,16 @@ namespace HalgarisRPGLoot.Analyzers
         protected (short Key, HashSet<ResolvedEnchantment>)[] ByLevel { get; set; }
 
 
-        protected readonly Random Random = new(Program.Settings.RarityAndVariationDistributionSettings.RandomSeed);
+        protected readonly Random Random = new(Program.Settings.GeneralSettings.RandomGenerationSeed);
 
         private readonly LeveledListFlagSettings _leveledListFlagSettings =
             Program.Settings.GeneralSettings.LeveledListFlagSettings;
 
-        private readonly string _enchantmentSeparatorString = Program.Settings.GeneralSettings.EnchantmentSeparator;
+        private readonly string _enchantmentSeparatorString = 
+            Program.Settings.NameGeneratorSettings.EnchantmentSeparator;
 
         private readonly string _lastEnchantmentSeparatorString =
-            Program.Settings.GeneralSettings.LastEnchantmentSeparator;
+            Program.Settings.NameGeneratorSettings.LastEnchantmentSeparator;
 
         protected string EditorIdPrefix;
 
@@ -187,8 +191,6 @@ namespace HalgarisRPGLoot.Analyzers
                 return objectEffectGetter.FormKey;
             }
 
-            Console.WriteLine("Generating " + RarityClasses[rarity].Label + ItemTypeDescriptor + " enchantment of " +
-                              GetEnchantmentsStringForName(effects));
             var newObjectEffectGetter = State.PatchMod.ObjectEffects.AddNewLocking(State.PatchMod.GetNextFormKey());
             newObjectEffectGetter.DeepCopyIn(effects.First().Enchantment);
             newObjectEffectGetter.EditorID = objectEffectEditorId;
@@ -201,7 +203,6 @@ namespace HalgarisRPGLoot.Analyzers
             ChosenRpgEnchants[rarity].Add(RarityClasses[rarity].Label + " " + GetEnchantmentsStringForName(effects),
                 newObjectEffectGetter.FormKey);
             ChosenRpgEnchantEffects[rarity].Add(newObjectEffectGetter.FormKey, effects);
-            Console.WriteLine("Enchantment Generated");
             return newObjectEffectGetter.FormKey;
         }
 
@@ -234,6 +235,70 @@ namespace HalgarisRPGLoot.Analyzers
             if (_leveledListFlagSettings.SpecialLoot)
                 flag |= LeveledItem.Flag.SpecialLoot;
             return flag;
+        }
+
+        protected string LabelMaker(int rarity, string itemName,
+            ResolvedEnchantment[] effects)
+        {
+            var rarityClass = RarityClasses[rarity];
+
+            switch (rarityClass.GeneratedNameScheme)
+            {
+                case GeneratedNameScheme.DontUse:
+                {
+                    return rarityClass.HideRarityLabelInName 
+                        ? $"{itemName} of {GetEnchantmentsStringForName(effects)}" 
+                        : $"{rarityClass.Label} {itemName} of {GetEnchantmentsStringForName(effects)}";
+                }
+                case GeneratedNameScheme.AsItemName:
+                {
+                    return rarityClass.HideRarityLabelInName 
+                        ? $"{ConfiguredNameGenerator.Next()} of {GetEnchantmentsStringForName(effects)}" 
+                        : $"{rarityClass.Label} of {GetEnchantmentsStringForName(effects)}";
+                }
+                case GeneratedNameScheme.AsItemNameReplacingEnchantments:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{ConfiguredNameGenerator.Next()}"
+                        : $"{rarityClass.Label} {ConfiguredNameGenerator.Next()}";
+                }
+                case GeneratedNameScheme.AsAppendedPreviousOwnerName:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{itemName} of {GetEnchantmentsStringForName(effects)} of {ConfiguredNameGenerator.Next()}"
+                        : $"{rarityClass.Label} {itemName} of {GetEnchantmentsStringForName(effects)} " +
+                          $"of {ConfiguredNameGenerator.Next()}";
+                }
+                case GeneratedNameScheme.AsAppendedPreviousOwnerNameReplacingEnchantments:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{itemName} of {ConfiguredNameGenerator.Next()}"
+                        : $"{rarityClass.Label} {itemName} of {ConfiguredNameGenerator.Next()}";
+                }
+                case GeneratedNameScheme.AsPrefixedPreviousOwnerName:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())} " +
+                          $"{itemName} of {GetEnchantmentsStringForName(effects)}"
+                        : $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())} " +
+                          $"{rarityClass.Label} of {GetEnchantmentsStringForName(effects)}";
+                }
+                case GeneratedNameScheme.AsPrefixedPreviousOwnerNameReplacingEnchantments:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())} " +
+                          $"{itemName}"
+                        : $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())} " +
+                          $"{rarityClass.Label} {itemName}";
+                }
+                default:
+                    goto case GeneratedNameScheme.DontUse;
+            }
+        }
+
+        protected string GetNameWithPossessiveS(string name)
+        {
+            return name.EndsWith('s') ? $"{name}'" : $"{name}'s";
         }
 
         // Forgot what I wanted to use this for but will keep it just in case I ever remember

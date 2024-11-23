@@ -1,4 +1,4 @@
-﻿namespace HalgarisRPGLoot.DataModels
+﻿namespace SynthesisRPGLoot.Settings.Enums
 {
     public enum ListMode
     {

@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using HalgarisRPGLoot.Analyzers;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
+using SynthesisRPGLoot.Analyzers;
 
 
-namespace HalgarisRPGLoot
+namespace SynthesisRPGLoot
 {
     class Program
     {
-        private static Lazy<Settings> _lazySettings = null!;
-        public static Settings Settings => _lazySettings.Value;
+        private static Lazy<Settings.Settings> _lazySettings = null!;
+        public static Settings.Settings Settings => _lazySettings.Value;
 
         private static async Task<int> Main(string[] args)
         {
@@ -22,7 +22,7 @@ namespace HalgarisRPGLoot
                     nickname: "Settings",
                     path: "Settings.json",
                     out _lazySettings)
-                .SetTypicalOpen(GameRelease.SkyrimSE, "HalgariRpgLoot.esp")
+                .SetTypicalOpen(GameRelease.SkyrimSE, "SynthesisRpgLoot.esp")
                 .Run(args);
         }
 

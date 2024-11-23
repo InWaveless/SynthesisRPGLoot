@@ -1,5 +1,14 @@
 ﻿# Changelog
 
+## Version 4.0.0 - 23.11.2024
+* Added [Syllabore](https://github.com/kesac/Syllabore) support for Name Generation
+* Made the Names more variable and not fully stuck to what their EditorID would be.
+* Renamed more parts of the Patcher to Synthesis RPG Loot from Halgaris RPG Loot.
+* Reduced the amount of logging and added a toggle to disable logging for individual items for better performance.
+  * Using the default settings and all the Anniversary Edition DLC Content Installed (On an AMD Ryzen 5 7600X CPU)
+    * Runtime with logging for individual items disabled 1.8 min.
+    * Runtime with logging for individual items enabled 2 min.
+
 ## Version 3.2.0 - 06.04.2024
 * Fixed unplayable armor and weapon records being used in the patcher
 
@@ -7,7 +16,7 @@
 * Updated Synthesis dependency
 
 ## Version 3.1.0 - 03.04.2024
-* Removed only process constructable items cause it isn't creating the limit that's intended for.
+* Removed only process constructable items because it isn't creating the limit that it is intended for.
 * Fixes for SkyrimVR and the Plugin Header Version 1.71
 
 ## Version 3.0.0 - 01.04.2024
