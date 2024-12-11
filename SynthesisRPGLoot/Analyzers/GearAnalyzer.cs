@@ -104,9 +104,15 @@ namespace SynthesisRPGLoot.Analyzers
                 {
                     topLevelList = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
                     topLevelList.DeepCopyIn(ench.List);
-                    topLevelList.Entries?.Clear();
+                    topLevelList.Entries = [];
                     topLevelList.EditorID = topLevelListEditorId;
                     topLevelList.Flags = GetLeveledItemFlags();
+                    
+                    for (var i = 0; i < GearSettings.BaseItemChanceWeight; i++)
+                    {
+                        var oldEntryChanceAdjustmentCopy = ench.Entry.DeepCopy();
+                        topLevelList.Entries.Add(oldEntryChanceAdjustmentCopy);
+                    }
 
                     var rarityClassNumber = 0;
 
@@ -124,7 +130,7 @@ namespace SynthesisRPGLoot.Analyzers
                         {
                             leveledItem = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
                             leveledItem.DeepCopyIn(ench.List);
-                            leveledItem.Entries = new ();
+                            leveledItem.Entries = [];
                             leveledItem.EditorID = leveledItemEditorId;
                             leveledItem.Flags = GetLeveledItemFlags();
 
@@ -156,13 +162,6 @@ namespace SynthesisRPGLoot.Analyzers
                 foreach (var entry in entries)
                 {
                     entry.Data.Reference.SetTo(topLevelList);
-                }
-
-
-                for (var i = 0; i < GearSettings.BaseItemChanceWeight; i++)
-                {
-                    var oldEntryChanceAdjustmentCopy = ench.Entry.DeepCopy();
-                    topLevelList.Entries.Add(oldEntryChanceAdjustmentCopy);
                 }
             }
         }

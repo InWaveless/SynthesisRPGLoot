@@ -28,6 +28,9 @@ namespace SynthesisRPGLoot
 
         private static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
         {
+            
+            Console.WriteLine("DEBUGGING");
+            
             // Workaround for VR Support until Mutagen adds support for the 1.71 header in VR
             if (state.PatchMod.ModHeader.Stats.NextFormID <= 0x800)
             {
