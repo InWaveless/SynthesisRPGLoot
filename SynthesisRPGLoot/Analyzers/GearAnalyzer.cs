@@ -94,7 +94,8 @@ namespace SynthesisRPGLoot.Analyzers
                 if (entries == null) continue;
                 if (ench.Entry.Data == null) continue;
                 if (ench.List?.Entries == null) continue;
-                var topLevelListEditorId = "HAL_TOP_LList_" + ench.Resolved.EditorID;
+                var levelForName = ench.Entry.Data.Level;
+                var topLevelListEditorId = $"HAL_TOP_LList_{ench.Resolved.EditorID}_Level_{levelForName}";
                 LeveledItem topLevelList;
                 if (State.LinkCache.TryResolve<ILeveledItemGetter>(topLevelListEditorId, out var topLeveledListGetter))
                 {
@@ -119,7 +120,7 @@ namespace SynthesisRPGLoot.Analyzers
 
                     foreach (var rarityClass in RarityClasses)
                     {
-                        var leveledItemEditorId = "HAL_SUB_LList_" + rarityClass.Label + "_" + ench.Resolved.EditorID;
+                        var leveledItemEditorId = $"HAL_SUB_LList_{rarityClass.Label}_{ench.Resolved.EditorID}_Level_{levelForName}";
                         LeveledItem leveledItem;
                         if (State.LinkCache.TryResolve<ILeveledItemGetter>(leveledItemEditorId,
                                 out var leveledItemGetter))
