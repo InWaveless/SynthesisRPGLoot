@@ -254,7 +254,7 @@ namespace SynthesisRPGLoot.Analyzers
                 {
                     return rarityClass.HideRarityLabelInName 
                         ? $"{ConfiguredNameGenerator.Next()} of {GetEnchantmentsStringForName(effects)}" 
-                        : $"{rarityClass.Label} of {GetEnchantmentsStringForName(effects)}";
+                        : $"{rarityClass.Label} {ConfiguredNameGenerator.Next()} of {GetEnchantmentsStringForName(effects)}";
                 }
                 case GeneratedNameScheme.AsItemNameReplacingEnchantments:
                 {
