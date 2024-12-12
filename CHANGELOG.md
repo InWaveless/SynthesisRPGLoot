@@ -1,5 +1,13 @@
 ﻿# Changelog
 
+## Version 4.1.0 - 12.12.2024
+* Fixes critical Bug in the way leveled lists are generated
+* Adds pre-generation logging to better inform users about what the app will generate with their chosen settings.
+* disable individual item logging by default since it blocks the more useful pre-generation logging and has a negative impact on performance
+* Added a math based safety net for the rarity weight setting.
+
+(No runtime estimates this time)
+
 ## Version 4.0.0 - 23.11.2024
 * Added [Syllabore](https://github.com/kesac/Syllabore) support for Name Generation
 * Made the Names more variable and not fully stuck with what their EditorID would be.
