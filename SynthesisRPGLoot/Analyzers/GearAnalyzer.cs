@@ -58,7 +58,7 @@ namespace SynthesisRPGLoot.Analyzers
         private readonly LeveledListFlagSettings _leveledListFlagSettings =
             Program.Settings.GeneralSettings.LeveledListFlagSettings;
 
-        private readonly string _enchantmentSeparatorString = 
+        private readonly string _enchantmentSeparatorString =
             Program.Settings.NameGeneratorSettings.EnchantmentSeparator;
 
         private readonly string _lastEnchantmentSeparatorString =
@@ -76,6 +76,66 @@ namespace SynthesisRPGLoot.Analyzers
 
         protected abstract void AnalyzeGear();
 
+        public void PreGenerationCheck()
+        {
+            BaseItems = RarityAndVariationDistributionSettings.LeveledListBase switch
+            {
+                LeveledListBase.AllValidEnchantedItems => AllEnchantedItems,
+                LeveledListBase.AllValidUnenchantedItems => AllUnenchantedItems,
+                _ => BaseItems
+            };
+            
+            var rarityWeightsSum = RarityClasses.Select(r =>
+                    (int) r.RarityWeight)
+                .ToArray()
+                .Sum()+GearSettings.BaseItemChanceWeight;
+
+            if (rarityWeightsSum > 255)
+            {
+                var factor = (float)255/rarityWeightsSum;
+                rarityWeightsSum = (short) (rarityWeightsSum * factor);
+                GearSettings.BaseItemChanceWeight = (short) (GearSettings.BaseItemChanceWeight * factor);
+                RarityClasses.ForEach(r => r.RarityWeight = (short) (r.RarityWeight * factor));
+                GearSettings.RarityClasses = RarityClasses;
+            }
+
+            var uniqueBaseItemCount = BaseItems.Select(item => item.Resolved.FormKey).Distinct().ToHashSet().Count;
+
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            Console.WriteLine($"Number of Base Items : {uniqueBaseItemCount}");
+            Console.WriteLine($"Number of Base LeveldListEntries: {BaseItems.Count}");
+            Console.WriteLine($"Number of Classes per Item: {RarityClasses.Count}");
+            Console.WriteLine($"Number of Variations per Rarity: {VarietyCountPerRarity}");
+            Console.WriteLine(
+                $"Number of Unique LeveledLists to Create : {uniqueBaseItemCount * (RarityClasses.Count + 1)}");
+            Console.WriteLine(
+                $"Number of unique new Items to Generate : {uniqueBaseItemCount * RarityClasses.Count * VarietyCountPerRarity}");
+            Console.WriteLine($"Total number of RPG Loot Patcher \"touched\" & new Leveled List Entries: {
+                BaseItems.Count
+                * (GearSettings.BaseItemChanceWeight
+                   + RarityClasses.Select(r =>
+                           (int) r.RarityWeight)
+                       .ToArray()
+                       .Sum()
+                   * VarietyCountPerRarity)}"
+            );
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            Console.WriteLine(
+                "Rarity Chances in Percent: \n" +
+                "(not perfect since they only impact the new additions relative to any existing loot chances)");
+            
+            Console.WriteLine($"BaseItem Chance: {(float)GearSettings.BaseItemChanceWeight/rarityWeightsSum:P2}");
+            foreach (var rarityClass in RarityClasses)
+            {
+                
+                Console.WriteLine($"{rarityClass.Label} Chance: {(float)rarityClass.RarityWeight/rarityWeightsSum:P2}");
+            }
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+        }
+
         public void Generate()
         {
             BaseItems = RarityAndVariationDistributionSettings.LeveledListBase switch
@@ -89,12 +149,13 @@ namespace SynthesisRPGLoot.Analyzers
             {
                 var entries = State.PatchMod.LeveledItems
                     .GetOrAddAsOverride(ench.List).Entries?.Where(entry =>
-                    entry.Data?.Reference.FormKey == ench.Resolved.FormKey);
+                        entry.Data?.Reference.FormKey == ench.Resolved.FormKey);
 
                 if (entries == null) continue;
                 if (ench.Entry.Data == null) continue;
                 if (ench.List?.Entries == null) continue;
-                var topLevelListEditorId = "HAL_TOP_LList_" + ench.Resolved.EditorID;
+                var levelForName = ench.Entry.Data.Level;
+                var topLevelListEditorId = $"HAL_TOP_LList_{ench.Resolved.EditorID}_Level_{levelForName}";
                 LeveledItem topLevelList;
                 if (State.LinkCache.TryResolve<ILeveledItemGetter>(topLevelListEditorId, out var topLeveledListGetter))
                 {
@@ -104,16 +165,23 @@ namespace SynthesisRPGLoot.Analyzers
                 {
                     topLevelList = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
                     topLevelList.DeepCopyIn(ench.List);
-                    topLevelList.Entries?.Clear();
+                    topLevelList.Entries = [];
                     topLevelList.EditorID = topLevelListEditorId;
                     topLevelList.Flags = GetLeveledItemFlags();
+
+                    for (var i = 0; i < GearSettings.BaseItemChanceWeight; i++)
+                    {
+                        var oldEntryChanceAdjustmentCopy = ench.Entry.DeepCopy();
+                        topLevelList.Entries.Add(oldEntryChanceAdjustmentCopy);
+                    }
 
                     var rarityClassNumber = 0;
 
 
                     foreach (var rarityClass in RarityClasses)
                     {
-                        var leveledItemEditorId = "HAL_SUB_LList_" + rarityClass.Label + "_" + ench.Resolved.EditorID;
+                        var leveledItemEditorId =
+                            $"HAL_SUB_LList_{rarityClass.Label}_{ench.Resolved.EditorID}_Level_{levelForName}";
                         LeveledItem leveledItem;
                         if (State.LinkCache.TryResolve<ILeveledItemGetter>(leveledItemEditorId,
                                 out var leveledItemGetter))
@@ -124,7 +192,7 @@ namespace SynthesisRPGLoot.Analyzers
                         {
                             leveledItem = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
                             leveledItem.DeepCopyIn(ench.List);
-                            leveledItem.Entries = new ();
+                            leveledItem.Entries = [];
                             leveledItem.EditorID = leveledItemEditorId;
                             leveledItem.Flags = GetLeveledItemFlags();
 
@@ -156,13 +224,6 @@ namespace SynthesisRPGLoot.Analyzers
                 foreach (var entry in entries)
                 {
                     entry.Data.Reference.SetTo(topLevelList);
-                }
-
-
-                for (var i = 0; i < GearSettings.BaseItemChanceWeight; i++)
-                {
-                    var oldEntryChanceAdjustmentCopy = ench.Entry.DeepCopy();
-                    topLevelList.Entries.Add(oldEntryChanceAdjustmentCopy);
                 }
             }
         }
@@ -246,15 +307,15 @@ namespace SynthesisRPGLoot.Analyzers
             {
                 case GeneratedNameScheme.DontUse:
                 {
-                    return rarityClass.HideRarityLabelInName 
-                        ? $"{itemName} of {GetEnchantmentsStringForName(effects)}" 
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{itemName} of {GetEnchantmentsStringForName(effects)}"
                         : $"{rarityClass.Label} {itemName} of {GetEnchantmentsStringForName(effects)}";
                 }
                 case GeneratedNameScheme.AsItemName:
                 {
-                    return rarityClass.HideRarityLabelInName 
-                        ? $"{ConfiguredNameGenerator.Next()} of {GetEnchantmentsStringForName(effects)}" 
-                        : $"{rarityClass.Label} of {GetEnchantmentsStringForName(effects)}";
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{ConfiguredNameGenerator.Next()} of {GetEnchantmentsStringForName(effects)}"
+                        : $"{rarityClass.Label} {ConfiguredNameGenerator.Next()} of {GetEnchantmentsStringForName(effects)}";
                 }
                 case GeneratedNameScheme.AsItemNameReplacingEnchantments:
                 {
