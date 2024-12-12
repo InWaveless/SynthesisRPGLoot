@@ -28,9 +28,7 @@ namespace SynthesisRPGLoot
 
         private static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
         {
-            //TODO:
-            Console.WriteLine("DEBUGGING");
-            
+
             // Workaround for VR Support until Mutagen adds support for the 1.71 header in VR
             if (state.PatchMod.ModHeader.Stats.NextFormID <= 0x800)
             {
@@ -45,6 +43,9 @@ namespace SynthesisRPGLoot
             var armor = new ArmorAnalyzer(state, objectEffectsAnalyzer);
             var weapon = new WeaponAnalyzer(state, objectEffectsAnalyzer);
             
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            
             Console.WriteLine("Analyzing mod list");
             var th1 = new Thread(() => armor.Analyze());
             var th2 = new Thread(() => weapon.Analyze());
@@ -53,12 +54,46 @@ namespace SynthesisRPGLoot
             th2.Start();
             th1.Join();
             th2.Join();
+
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("Calculating Output Statistics For Comparison:");
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("Armor Statistics:");
+            armor.CalculateStats();
+            
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("Weapon Statistics:");
+            weapon.CalculateStats();
+            
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            
+            Console.WriteLine("Please consider the Calculations above when you think the next steps take too long.");
+            Console.WriteLine("This patcher will take a long time on bigger setups.");
+            Console.WriteLine("If your runtime reaches more than 40min or more than an hour, then you should dial down\n" +
+                              "The amount of Variations per Rarity and maybe even the amount of Rarities you are using.\n" +
+                              "Because long generation times will also mean longer loading times for the game\n" +
+                              "and possible instabilities since the Engine wasn't made for such insanities.");
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
             
             Console.WriteLine("Generating armor enchantments");
             armor.Generate();
+            Console.WriteLine("Done Generating armor enchantments");
             
             Console.WriteLine("Generating weapon enchantments");
             weapon.Generate();
+            Console.WriteLine("Done Generating weapon enchantments");
+            
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
+            Console.WriteLine(
+                "------------------------------------------------------------------------------------------------------");
 
             Console.WriteLine("\n" +
                               " _                 _     _____                _           _   \n" +
