@@ -76,7 +76,7 @@ namespace SynthesisRPGLoot.Analyzers
 
         protected abstract void AnalyzeGear();
 
-        public void CalculateStats()
+        public void PreGenerationCheck()
         {
             BaseItems = RarityAndVariationDistributionSettings.LeveledListBase switch
             {
@@ -84,8 +84,23 @@ namespace SynthesisRPGLoot.Analyzers
                 LeveledListBase.AllValidUnenchantedItems => AllUnenchantedItems,
                 _ => BaseItems
             };
+            
+            var rarityWeightsSum = RarityClasses.Select(r =>
+                    (int) r.RarityWeight)
+                .ToArray()
+                .Sum()+GearSettings.BaseItemChanceWeight;
+
+            if (rarityWeightsSum > 255)
+            {
+                var factor = (float)255/rarityWeightsSum;
+                rarityWeightsSum = (short) (rarityWeightsSum * factor);
+                GearSettings.BaseItemChanceWeight = (short) (GearSettings.BaseItemChanceWeight * factor);
+                RarityClasses.ForEach(r => r.RarityWeight = (short) (r.RarityWeight * factor));
+                GearSettings.RarityClasses = RarityClasses;
+            }
 
             var uniqueBaseItemCount = BaseItems.Select(item => item.Resolved.FormKey).Distinct().ToHashSet().Count;
+
             Console.WriteLine(
                 "------------------------------------------------------------------------------------------------------");
             Console.WriteLine($"Number of Base Items : {uniqueBaseItemCount}");
@@ -110,10 +125,7 @@ namespace SynthesisRPGLoot.Analyzers
             Console.WriteLine(
                 "Rarity Chances in Percent: \n" +
                 "(not perfect since they only impact the new additions relative to any existing loot chances)");
-            var rarityWeightsSum = RarityClasses.Select(r =>
-                    (int) r.RarityWeight)
-                .ToArray()
-                .Sum()+GearSettings.BaseItemChanceWeight;
+            
             Console.WriteLine($"BaseItem Chance: {(float)GearSettings.BaseItemChanceWeight/rarityWeightsSum:P2}");
             foreach (var rarityClass in RarityClasses)
             {

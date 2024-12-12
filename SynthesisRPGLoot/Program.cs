@@ -57,16 +57,16 @@ namespace SynthesisRPGLoot
 
             Console.WriteLine(
                 "------------------------------------------------------------------------------------------------------");
-            Console.WriteLine("Calculating Output Statistics For Comparison:");
+            Console.WriteLine("Pre-Generation Checks by doing some Math with the chosen Settings:");
             Console.WriteLine(
                 "------------------------------------------------------------------------------------------------------");
-            Console.WriteLine("Armor Statistics:");
-            armor.CalculateStats();
+            Console.WriteLine("Armor Pre-Generation Checks:");
+            armor.PreGenerationCheck();
             
             Console.WriteLine(
                 "------------------------------------------------------------------------------------------------------");
-            Console.WriteLine("Weapon Statistics:");
-            weapon.CalculateStats();
+            Console.WriteLine("Weapon Pre-Generation Checks:");
+            weapon.PreGenerationCheck();
             
             Console.WriteLine(
                 "------------------------------------------------------------------------------------------------------");
