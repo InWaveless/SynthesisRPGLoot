@@ -17,7 +17,7 @@ public class GeneralSettings
     
     [MaintainOrder]
     [SynthesisTooltip("Disabling this can speed up the generation process.")]
-    public bool LogGeneratedItems = true;
+    public bool LogGeneratedItems = false;
         
     [MaintainOrder]
     [SynthesisSettingName("LeveledList Flags")]
