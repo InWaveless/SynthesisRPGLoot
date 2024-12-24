@@ -68,6 +68,9 @@ namespace SynthesisRPGLoot.Analyzers
 
         protected string ItemTypeDescriptor;
 
+        protected Dictionary<string, ILeveledItemGetter> GeneratedLeveledItemsCache { get; init; }
+        
+        protected Dictionary<string, TType> GeneratedItemCache { get; init; }
 
         public void Analyze()
         {
@@ -157,7 +160,7 @@ namespace SynthesisRPGLoot.Analyzers
                 var levelForName = ench.Entry.Data.Level;
                 var topLevelListEditorId = $"HAL_TOP_LList_{ench.Resolved.EditorID}_Level_{levelForName}";
                 LeveledItem topLevelList;
-                if (State.LinkCache.TryResolve<ILeveledItemGetter>(topLevelListEditorId, out var topLeveledListGetter))
+                if (GeneratedLeveledItemsCache.TryGetValue(topLevelListEditorId, out var topLeveledListGetter))
                 {
                     topLevelList = State.PatchMod.LeveledItems.GetOrAddAsOverride(topLeveledListGetter);
                 }
@@ -168,6 +171,8 @@ namespace SynthesisRPGLoot.Analyzers
                     topLevelList.Entries = [];
                     topLevelList.EditorID = topLevelListEditorId;
                     topLevelList.Flags = GetLeveledItemFlags();
+                    
+                    GeneratedLeveledItemsCache.Add(topLevelList.EditorID,topLevelList);
 
                     for (var i = 0; i < GearSettings.BaseItemChanceWeight; i++)
                     {
@@ -183,7 +188,7 @@ namespace SynthesisRPGLoot.Analyzers
                         var leveledItemEditorId =
                             $"HAL_SUB_LList_{rarityClass.Label}_{ench.Resolved.EditorID}_Level_{levelForName}";
                         LeveledItem leveledItem;
-                        if (State.LinkCache.TryResolve<ILeveledItemGetter>(leveledItemEditorId,
+                        if (GeneratedLeveledItemsCache.TryGetValue(leveledItemEditorId,
                                 out var leveledItemGetter))
                         {
                             leveledItem = State.PatchMod.LeveledItems.GetOrAddAsOverride(leveledItemGetter);
@@ -195,6 +200,8 @@ namespace SynthesisRPGLoot.Analyzers
                             leveledItem.Entries = [];
                             leveledItem.EditorID = leveledItemEditorId;
                             leveledItem.Flags = GetLeveledItemFlags();
+                            
+                            GeneratedLeveledItemsCache[leveledItem.EditorID] = leveledItem;
 
                             for (var i = 0; i < VarietyCountPerRarity; i++)
                             {
@@ -247,11 +254,6 @@ namespace SynthesisRPGLoot.Analyzers
             var objectEffectEditorId = EditorIdPrefix + "ENCH_" + RarityClasses[rarity].Label.ToUpper() + "_" +
                                        GetEnchantmentsStringForName(effects, true);
 
-            if (State.LinkCache.TryResolve<IObjectEffectGetter>(objectEffectEditorId, out var objectEffectGetter))
-            {
-                return objectEffectGetter.FormKey;
-            }
-
             var newObjectEffectGetter = State.PatchMod.ObjectEffects.AddNewLocking(State.PatchMod.GetNextFormKey());
             newObjectEffectGetter.DeepCopyIn(effects.First().Enchantment);
             newObjectEffectGetter.EditorID = objectEffectEditorId;
@@ -264,6 +266,7 @@ namespace SynthesisRPGLoot.Analyzers
             ChosenRpgEnchants[rarity].Add(RarityClasses[rarity].Label + " " + GetEnchantmentsStringForName(effects),
                 newObjectEffectGetter.FormKey);
             ChosenRpgEnchantEffects[rarity].Add(newObjectEffectGetter.FormKey, effects);
+            
             return newObjectEffectGetter.FormKey;
         }
 
