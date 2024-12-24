@@ -52,6 +52,9 @@ namespace SynthesisRPGLoot.Analyzers
             {
                 ChosenRpgEnchantEffects[i] = new();
             }
+            
+            GeneratedItemCache = new();
+            GeneratedLeveledItemsCache = new();
         }
 
         protected override void AnalyzeGear()
@@ -178,7 +181,7 @@ namespace SynthesisRPGLoot.Analyzers
                 var newArmorEditorId = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" +
                                        itemName +
                                        "_of_" + GetEnchantmentsStringForName(effects, true);
-                if (State.LinkCache.TryResolve<IArmorGetter>(newArmorEditorId, out var armorGetter))
+                if (GeneratedItemCache.TryGetValue(newArmorEditorId, out var armorGetter))
                 {
                     return armorGetter.FormKey;
                 }
@@ -198,6 +201,8 @@ namespace SynthesisRPGLoot.Analyzers
                     newArmor.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
                 }
                 
+                GeneratedItemCache.Add(newArmor.EditorID, newArmor);
+                
                 if (Program.Settings.GeneralSettings.LogGeneratedItems)
                     Console.WriteLine($"Generated {newArmor.Name}");
                 
@@ -206,7 +211,7 @@ namespace SynthesisRPGLoot.Analyzers
             else
             {
                 var newArmorEditorId = EditorIdPrefix + item.Resolved.EditorID;
-                if (State.LinkCache.TryResolve<IArmorGetter>(newArmorEditorId, out var armorGetter))
+                if (GeneratedItemCache.TryGetValue(newArmorEditorId, out var armorGetter))
                 {
                     return State.PatchMod.Armors.GetOrAddAsOverride(armorGetter).FormKey;
                 }
@@ -218,6 +223,8 @@ namespace SynthesisRPGLoot.Analyzers
                 newArmor.Name = RarityClasses[rarity].Label.Equals("")
                     ? itemName
                     : RarityClasses[rarity].Label + " " + itemName;
+                
+                GeneratedItemCache.Add(newArmor.EditorID, newArmor);
                 
                 if (Program.Settings.GeneralSettings.LogGeneratedItems)
                     Console.WriteLine($"Generated {newArmor.Name}");

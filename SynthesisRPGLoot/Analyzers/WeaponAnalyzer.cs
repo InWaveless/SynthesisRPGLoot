@@ -52,6 +52,9 @@ namespace SynthesisRPGLoot.Analyzers
             {
                 ChosenRpgEnchantEffects[i] = new();
             }
+
+            GeneratedItemCache = new();
+            GeneratedLeveledItemsCache = new();
         }
 
         protected override void AnalyzeGear()
@@ -178,7 +181,7 @@ namespace SynthesisRPGLoot.Analyzers
                 var newWeaponEditorId = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" +
                                         itemName +
                                         "_of_" + GetEnchantmentsStringForName(effects, true);
-                if (State.LinkCache.TryResolve<IWeaponGetter>(newWeaponEditorId, out var weaponGetter))
+                if (GeneratedItemCache.TryGetValue(newWeaponEditorId, out var weaponGetter))
                 {
                     return weaponGetter.FormKey;
                 }
@@ -198,6 +201,8 @@ namespace SynthesisRPGLoot.Analyzers
                     newWeapon.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
                 }
                 
+                GeneratedItemCache.Add(newWeapon.EditorID, newWeapon);
+                
                 if (Program.Settings.GeneralSettings.LogGeneratedItems)
                     Console.WriteLine($"Generated {newWeapon.Name}");
 
@@ -206,10 +211,11 @@ namespace SynthesisRPGLoot.Analyzers
             else
             {
                 var newWeaponEditorId = EditorIdPrefix + item.Resolved.EditorID;
-                if (State.LinkCache.TryResolve<IWeaponGetter>(newWeaponEditorId, out var weaponGetter))
+                if (GeneratedItemCache.TryGetValue(newWeaponEditorId, out var weaponGetter))
                 {
                     return weaponGetter.FormKey;
                 }
+                
                 var newWeapon = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newWeapon.DeepCopyIn(item.Resolved);
                 newWeapon.EditorID = newWeaponEditorId;
@@ -217,6 +223,8 @@ namespace SynthesisRPGLoot.Analyzers
                 newWeapon.Name = RarityClasses[rarity].Label.Equals("")
                     ? itemName
                     : RarityClasses[rarity].Label + " " + itemName;
+                
+                GeneratedItemCache.Add(newWeapon.EditorID, newWeapon);
                 
                 if (Program.Settings.GeneralSettings.LogGeneratedItems)
                     Console.WriteLine($"Generated {newWeapon.Name}");
