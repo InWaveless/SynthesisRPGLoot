@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 4.2.0 - 24.12.2024
+* Improved performance significantly. Runtime reduced form Minutes to Seconds.
+
 ## Version 4.1.0 - 12.12.2024
 * Fixes critical Bug in the way leveled lists are generated
 * Adds pre-generation logging to better inform users about what the app will generate with their chosen settings.

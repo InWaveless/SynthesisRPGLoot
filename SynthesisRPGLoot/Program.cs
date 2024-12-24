@@ -73,8 +73,8 @@ namespace SynthesisRPGLoot
             
             Console.WriteLine("Please consider the Calculations above when you think the next steps take too long.");
             Console.WriteLine("This patcher will take a long time on bigger setups.");
-            Console.WriteLine("If your runtime reaches more than 40min or more than an hour, then you should dial down\n" +
-                              "The amount of Variations per Rarity and maybe even the amount of Rarities you are using.\n" +
+            Console.WriteLine("If this patcher requires more than a few minutes to run, then you should dial down the\n" +
+                              "amount of Variations per Rarity and maybe even the amount of Rarities you are creating.\n" +
                               "Because long generation times will also mean longer loading times for the game\n" +
                               "and possible instabilities since the Engine wasn't made for such insanities.");
             Console.WriteLine(
