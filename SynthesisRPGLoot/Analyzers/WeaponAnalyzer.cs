@@ -193,8 +193,6 @@ namespace SynthesisRPGLoot.Analyzers
                 newWeapon.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 
                 newWeapon.Name = LabelMaker(rarity,itemName,effects);
-                
-                newWeapon.Template = (IFormLinkNullable<IWeaponGetter>) item.Resolved.ToNullableLinkGetter();
 
                 if (!RarityClasses[rarity].AllowDisenchanting)
                 {

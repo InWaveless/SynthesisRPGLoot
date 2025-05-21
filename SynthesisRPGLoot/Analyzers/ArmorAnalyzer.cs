@@ -193,8 +193,6 @@ namespace SynthesisRPGLoot.Analyzers
                 newArmor.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 
                 newArmor.Name = LabelMaker(rarity,itemName,effects);
-                
-                newArmor.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
 
                 if (!RarityClasses[rarity].AllowDisenchanting)
                 {
